@@ -7,6 +7,9 @@ java_binary(
     name = "Example",
     srcs = ["Example.java"],
     main_class = "com.etsy.example.Example",
+    deps = [
+        "@maven//:com_google_cloud_google_cloud_bigquery",
+    ],
 )
 
 java_binary(

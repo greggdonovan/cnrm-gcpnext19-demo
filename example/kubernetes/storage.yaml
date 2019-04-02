@@ -2,7 +2,7 @@ apiVersion: storage.cnrm.cloud.google.com/v1alpha1
 kind: StorageBucket
 metadata:
   labels:
-    label-one: "value-one"
+    label-one: "example-bucket"
   name: example-bucket
 spec:
   lifecycle:

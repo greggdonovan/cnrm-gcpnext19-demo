@@ -133,6 +133,7 @@ load("@rules_jvm_external//:defs.bzl", "maven_install")
 maven_install(
     artifacts = [
         "com.google.cloud:google-cloud-storage:1.66.0",
+        "com.google.cloud:google-cloud-bigquery:1.66.0",
     ],
     fetch_sources = True,
     repositories = [
