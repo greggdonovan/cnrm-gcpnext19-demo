@@ -11,7 +11,7 @@ git_repository(
 
 load("@bazel_skylib//lib:versions.bzl", "versions")
 
-versions.check(minimum_bazel_version = "0.24.0")
+versions.check(minimum_bazel_version = "0.24.1")
 
 load("@bazel_tools//tools/build_defs/repo:git.bzl", "git_repository")
 
