@@ -46,7 +46,7 @@ public class Example {
   }
 
   private static void sendStructuredLogToBigQuery(String message, int length) {
-    TableId tableId = TableId.of("cnrm-gcpnext19-demo", "exampledataset", "exampletablename");
+    TableId tableId = TableId.of("cnrm-gcpnext19-demo", "examplebigquerydataset", "exampletablename");
 
     Map<String, Object> rowContent = new HashMap<>();
     rowContent.put("message", message);
