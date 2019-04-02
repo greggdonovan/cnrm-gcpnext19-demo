@@ -1,0 +1,12 @@
+directories:
+  .
+
+targets:
+  //...
+
+workspace_type: java
+
+java_language_level: 8
+
+additional_languages:
+  python

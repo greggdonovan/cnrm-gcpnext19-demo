@@ -1,0 +1,5 @@
+filegroup(
+    name = "gcloud_configs",
+    srcs = glob(["gcloud/**/*"]),
+    visibility = ["//visibility:public"],
+)

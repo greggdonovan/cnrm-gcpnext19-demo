@@ -1,0 +1,28 @@
+load("@io_bazel_rules_docker//container:container.bzl", "container_layer")
+
+container_layer(
+    name = "cloud_sdk",
+    data_path = "./.",
+    directory = "/gcloud",
+    files = ["@cloud_sdk"],
+    visibility = ["//visibility:public"],
+)
+
+container_layer(
+    name = "gcloud_configs_docker",
+    data_path = "/configs/",
+    directory = "/etc/search/",
+    env = {
+        "GCLOUD_CONFIGS": "/etc/search/gcloud/",
+    },
+    files = [
+        "//configs:gcloud_configs",
+    ],
+    visibility = ["//visibility:public"],
+)
+
+filegroup(
+    name = "gcloud_utils",
+    srcs = glob(["*.sh"]),
+    visibility = ["//visibility:public"],
+)

@@ -1,0 +1,11 @@
+licenses(["unencumbered"])
+
+exports_files(
+    glob(["YourKit-JavaProfiler-2019.1/bin/linux-x86-64/libyjpagent.so"]),
+)
+
+alias(
+    name = "linux_x86_64_agent",
+    actual = ":YourKit-JavaProfiler-2019.1/bin/linux-x86-64/libyjpagent.so",
+    visibility = ["//visibility:public"],
+)

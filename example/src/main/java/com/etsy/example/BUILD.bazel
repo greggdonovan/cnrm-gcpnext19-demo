@@ -1,0 +1,64 @@
+load("@io_bazel_rules_docker//java:image.bzl", "java_image")
+load("@io_bazel_rules_docker//container:image.bzl", "container_image")
+load("@io_bazel_rules_docker//container:container.bzl", "container_layer")
+load("@io_bazel_rules_docker//docker:docker.bzl", "docker_build")
+
+java_binary(
+    name = "Example",
+    srcs = ["Example.java"],
+    main_class = "com.etsy.example.Example",
+)
+
+java_binary(
+    name = "CopyToStorage",
+    srcs = ["CopyToStorage.java"],
+    main_class = "com.etsy.example.CopyToStorage",
+    deps = [
+        "@maven//:com_google_cloud_google_cloud_storage",
+    ],
+)
+
+docker_build(
+    name = "test",
+    base = "@ubuntu_1810//image",
+    debs = [
+        "@gcloud_deb//file",
+    ],
+    visibility = ["//visibility:public"],
+)
+
+container_image(
+    name = "ExampleContainerImage",
+    base = ":test",
+    directory = "/search/dist",
+    files = [
+        ":CopyToStorage_deploy.jar",
+        ":Example_deploy.jar",
+        ":run.sh",
+    ],
+    ports = ["8000"],
+    workdir = "/search/dist",
+)
+
+container_layer(
+    name = "yourkit",
+    directory = "/yourkit/lib",
+    files = [
+        "//third_party/yourkit:linux_x86_64_agent",
+    ],
+)
+
+container_image(
+    name = "Example-With-YourKit",
+    base = ":ExampleContainerImage",
+    directory = "/scripts",
+    files = [
+        "//lib/gcloud:gcloud_utils",
+    ],
+    layers = [
+        "//lib/gcloud:cloud_sdk",
+        ":yourkit",
+        "//lib/gcloud:gcloud_configs_docker",
+    ],
+    visibility = ["//visibility:public"],
+)
