@@ -23,30 +23,28 @@ public class Example {
   private static BigQuery bigquery = null;
 
   public static void main(String[] args) throws Exception {
-    System.out.println("Starting Example server. About to listen on 8000");
-    Thread exitAfterThirtySeconds =
-        new Thread(
-            () -> {
-              try {
-                Thread.sleep(30000);
-                System.out.println("Exiting after 30 seconds.");
-                System.exit(0);
-              } catch (InterruptedException ie) {
-              }
-            });
-    exitAfterThirtySeconds.start();
+    System.out.println("Starting Example server.");
 
-    bigquery = BigQueryOptions.getDefaultInstance().getService();
-    sendStructuredLogToBigQuery("test message", 100);
+    try {
+      bigquery = BigQueryOptions.getDefaultInstance().getService();
+      sendStructuredLogToBigQuery("test message", 100);
+    } catch (Exception e) {
+      System.err.println("Error writing a test message to BigQuery" + e.getMessage());
+      e.printStackTrace();
+    }
 
     HttpServer server = HttpServer.create(new InetSocketAddress(8000), 0);
-    server.createContext("/test", new MyHandler());
+    Runtime.getRuntime().addShutdownHook(new Thread(() -> server.stop(0)));
+    server.createContext("/hello", new HelloHandler());
+    server.createContext("/goodbye", new GoodbyeHandler());
     server.setExecutor(null); // creates a default executor
+    System.out.println("Listening on port 8000.");
     server.start();
   }
 
   private static void sendStructuredLogToBigQuery(String message, int length) {
-    TableId tableId = TableId.of("cnrm-gcpnext19-demo", "examplebigquerydataset", "exampletablename");
+    TableId tableId =
+        TableId.of("cnrm-gcpnext19-demo", "examplebigquerydataset", "exampletablename");
 
     Map<String, Object> rowContent = new HashMap<>();
     rowContent.put("message", message);
@@ -64,19 +62,35 @@ public class Example {
         // inspect row error
         System.err.println(entry);
       }
-      System.exit(1);
     }
   }
 
-  static class MyHandler implements HttpHandler {
+  static class HelloHandler implements HttpHandler {
     @Override
     public void handle(HttpExchange t) throws IOException {
-      System.out.println("got an HTTP request");
-      String response = "Hello CRNM";
+      String response = "\nHello, GCP Next 2019!\n";
       t.sendResponseHeaders(200, response.length());
       OutputStream os = t.getResponseBody();
       os.write(response.getBytes());
       os.close();
+    }
+  }
+
+  static class GoodbyeHandler implements HttpHandler {
+    @Override
+    public void handle(HttpExchange httpExchange) throws IOException {
+      try {
+        String response =
+            "\n\"Cowards die many times before their deaths; the valiant never taste death but once.\" \n -- Shakespeare\n";
+        httpExchange.sendResponseHeaders(200, response.length());
+        OutputStream os = httpExchange.getResponseBody();
+        os.write(response.getBytes());
+        os.close();
+      } catch (Throwable t){
+        t.printStackTrace(System.err);
+      }
+      System.out.println("Exiting example application.");
+      System.exit(0);
     }
   }
 }

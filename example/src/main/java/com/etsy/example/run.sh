@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 
+: "${KUBERNETES_CLUSTER?KUBERNETES_CLUSTER is required}"
+: "${KUBERNETES_NAMESPACE?KUBERNETES_NAMESPACE is required}"
+: "${KUBERNETES_CONTAINER_NAME?KUBERNETES_CONTAINER_NAME is required}"
+
 set -o errexit
 set -u
 set -x
@@ -14,7 +18,10 @@ script_dir=$(readlink -f "$(dirname "$(type -p "$0")")")
 
 YOURKIT_OPTS='-agentpath:/yourkit/lib/libyjpagent.so=sampling,port=10001,listen=all,logdir=/var/log/search/yourkit,onexit=snapshot,dir=/var/log/search/yourkit'
 
-bucket="cnrm-demo-hardcoded-test"
+echo "KUBERNETES_CLUSTER=${KUBERNETES_CLUSTER}"
+echo "KUBERNETES_NAMESPACE=${KUBERNETES_NAMESPACE}"
+echo "KUBERNETES_CONTAINER_NAME=${KUBERNETES_CONTAINER_NAME}"
+bucket="${KUBERNETES_CLUSTER}-${KUBERNETES_NAMESPACE}-${KUBERNETES_CONTAINER_NAME}"
 
 echo "Enabling YourKit with YOURKIT_OPTS=\"${YOURKIT_OPTS}\" bucket=${bucket}"
 mkdir -p /var/log/search/yourkit/

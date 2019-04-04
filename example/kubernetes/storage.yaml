@@ -1,9 +1,7 @@
 apiVersion: storage.cnrm.cloud.google.com/v1alpha1
 kind: StorageBucket
 metadata:
-  labels:
-    label-one: "example-bucket"
-  name: example-bucket
+  name: cnrm-eap-cnrm-gcpnext19-demo-example
 spec:
   lifecycle:
     rules:

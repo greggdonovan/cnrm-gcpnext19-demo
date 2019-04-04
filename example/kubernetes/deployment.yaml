@@ -35,6 +35,14 @@ spec:
             value: /tmp/gcloud/.boto
           - name: GOOGLE_APPLICATION_CREDENTIALS
             value: /search/.gcp-gcs-writer-sa-key/key-content
+          - name: KUBERNETES_CLUSTER
+            value: "cnrm-eap"
+          - name: KUBERNETES_NAMESPACE
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.namespace
+          - name: KUBERNETES_CONTAINER_NAME
+            value: "example"
           command:
             - /search/dist/run.sh
           ports:

@@ -3,7 +3,6 @@ package com.etsy.example;
 import com.google.cloud.storage.BlobId;
 import com.google.cloud.storage.BlobInfo;
 import com.google.cloud.storage.Bucket;
-import com.google.cloud.storage.BucketInfo;
 import com.google.cloud.storage.Storage;
 import com.google.cloud.storage.StorageOptions;
 import java.io.IOException;
@@ -32,13 +31,20 @@ public class CopyToStorage {
     // The name for the new bucket
     String bucketName = args[1];
 
-    // Creates the new bucket
+    // Check if our bucket already exists
     try {
-    Bucket bucket = storage.create(BucketInfo.of(bucketName));
-      System.out.printf("Bucket %s created.%n", bucket.getName());
-    } catch (Exception e){}
-
-
+      Bucket bucket = storage.get(destinationBucket);
+      if (bucket != null) {
+        System.out.println("Found our bucket: " + bucket);
+      } else {
+        System.out.println("Bucket does not exist. Exiting.");
+        System.exit(1);
+      }
+    } catch (Exception e){
+      System.err.println("Error getting the bucket: " + e.getMessage());
+      e.printStackTrace(System.err);
+      System.exit(1);
+    }
 
     try (Stream<Path> files = Files.walk(Paths.get(sourceDirectory))) {
       files
