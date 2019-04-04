@@ -55,6 +55,8 @@ public class CopyToStorage {
                   System.err.println("io exception " + io.getMessage());
                   io.printStackTrace();
                   throw new RuntimeException(io);
+                } finally{
+                  f.toFile().deleteOnExit();
                 }
               });
 
