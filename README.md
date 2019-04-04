@@ -26,6 +26,11 @@ gcloud container clusters get-credentials cnrm-eap
 
 Consult the CNRM docs.
 
+- Install kubeon, kubeoff, kubens
+
+Install [kube-ps1](https://github.com/jonmosco/kube-ps1) to see kube context in your Bash PS1.
+Install [kubectx](https://github.com/ahmetb/kubectx) to switch faster between clusters and namespaces in kubectl.
+
 
 # Update the CRDs
 
