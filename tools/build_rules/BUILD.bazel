@@ -1,0 +1,18 @@
+load("//tools/build_rules:k8s_contexts.bzl", "app", "cluster", "deploy", "k8s_contexts_by_app", "namespace")
+
+exports_files([
+    "k8s_template.bzl",
+    "BUILD.bazel",
+])
+
+py_binary(
+    name = "k8s_templater",
+    srcs = ["k8s_templater.py"],
+    visibility = ["//visibility:public"],
+)
+
+py_binary(
+    name = "template_stamper",
+    srcs = ["template_stamper.py"],
+    visibility = ["//visibility:public"],
+)

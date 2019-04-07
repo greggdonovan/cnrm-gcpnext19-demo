@@ -5,9 +5,10 @@ load("@io_bazel_rules_docker//docker:docker.bzl", "docker_build")
 
 java_binary(
     name = "Example",
-    srcs = ["Example.java"],
+    srcs = ["Example.java", "StructuredLog.java"],
     main_class = "com.etsy.example.Example",
     deps = [
+        "@maven//:com_google_http_client_google_http_client",
         "@maven//:com_google_cloud_google_cloud_bigquery",
     ],
 )

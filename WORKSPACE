@@ -51,39 +51,6 @@ load("@io_bazel_rules_k8s//k8s:k8s.bzl", "k8s_defaults", "k8s_repositories")
 
 k8s_repositories()
 
-_CLUSTER = "gke_cnrm-gcpnext19-demo_us-central1-a_cnrm-eap"
-
-_CONTEXT = _CLUSTER
-
-_NAMESPACE = "cnrm-gcpnext19-demo"
-
-k8s_defaults(
-    name = "k8s_object",
-    cluster = _CLUSTER,
-    context = _CONTEXT,
-    image_chroot = "us.gcr.io/cnrm-gcpnext19-demo",
-    namespace = _NAMESPACE,
-)
-
-k8s_defaults(
-    name = "k8s_deploy",
-    cluster = _CLUSTER,
-    context = _CONTEXT,
-    image_chroot = "us.gcr.io/cnrm-gcpnext19-demo",
-    kind = "deployment",
-    namespace = _NAMESPACE,
-)
-
-[k8s_defaults(
-    name = "k8s_" + kind,
-    cluster = _CLUSTER,
-    context = _CONTEXT,
-    kind = kind,
-    namespace = _NAMESPACE,
-) for kind in [
-    "service",
-]]
-
 container_pull(
     name = "ubuntu_1810",
     digest = "sha256:4e5b56bb3b5eb670e45bb853fd0513aee02df2ed8d19f5ab2f2ebd3b4195bc99",
@@ -142,3 +109,47 @@ maven_install(
         "https://repo1.maven.org/maven2",
     ],
 )
+
+# begin atlassian/bazel-tools
+
+atlassian_bazel_tools_version = "93876497830d172b4b9c314e15d01245a926dfcb"
+
+http_archive(
+    name = "com_github_atlassian_bazel_tools",
+    strip_prefix = "bazel-tools-%s" % atlassian_bazel_tools_version,
+    urls = ["https://github.com/atlassian/bazel-tools/archive/%s.tar.gz" % atlassian_bazel_tools_version],
+)
+
+load("@com_github_atlassian_bazel_tools//:multirun/deps.bzl", "multirun_dependencies")
+
+multirun_dependencies()
+
+# end atlassian/bazel-tools
+
+
+# begin rules_python
+
+git_repository(
+    name = "io_bazel_rules_python",
+    commit = "8b5d0683a7d878b28fffe464779c8a53659fc645",
+    remote = "https://github.com/bazelbuild/rules_python.git",
+)
+
+load("@io_bazel_rules_python//python:pip.bzl", "pip_import", "pip_repositories")
+
+pip_repositories()
+
+# This rule translates the specified requirements.txt into
+# @kubernetes_deps//:requirements.bzl, which itself exposes a pip_install method.
+pip_import(
+    name = "kubernetes_deps",
+    requirements = "//lib/kubernetes:requirements.lock.txt",
+)
+
+# Load the pip_install symbol for kubernetes_deps, and create the dependencies'
+# repositories.
+load("@kubernetes_deps//:requirements.bzl", "pip_install")
+
+pip_install()
+
+# end rules_python

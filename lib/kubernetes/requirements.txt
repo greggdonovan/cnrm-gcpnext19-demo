@@ -1,0 +1,23 @@
+# Danger danger! Many of these deps cannot be upgraded past their current
+# release, because the new eggs/wheels don't include the metadata.json file
+# required for rules_python to calculate transitive dependencies.  That results
+# in run-time failures as missing deps can't be loaded.  Update with caution
+# until these are fixed:
+# - https://github.com/bazelbuild/rules_python/pull/90
+# - https://github.com/bazelbuild/rules_python/pull/121
+
+# NB: Bazel does not load this file directly, but loads requirements.lock.txt
+# with a fixed set of resolved transitive dependencies.  Use
+# `dev-scripts/dependencies/generate.sh --python` to update that file after changing this
+# file.
+
+PyYAML==3.12
+docopt==0.6.2
+kubernetes==6.0.0b1 # newer versions are missing metadata.json
+flask==0.12.2
+gevent==1.3a2
+Jinja2==2.10
+oauthlib==2.0.7 # newer versions are missing metadata.json
+requests==2.19.1 # newer versions are missing metadata.json
+urllib3==1.23
+elasticsearch==6.3.1

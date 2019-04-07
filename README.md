@@ -65,7 +65,7 @@ kubectl create secret generic gcp-gcs-writer-sa-key --from-file=key-content=/hom
 To deploy the `example` service:
 
 ```bash
-bazel run //example/kubernetes:example-deployment.apply
+bazel run //example/kubernetes:k8s.gke_cnrm-gcpnext19-demo_us-central1-a_cnrm-eap.cnrm-gcpnext19-demo.apply
 ```
 
 # Get a shell in the `example` container image
@@ -73,4 +73,10 @@ bazel run //example/kubernetes:example-deployment.apply
 ```bash
 bazel run //example/src/main/java/com/etsy/example:Example-With-YourKit && \
 docker run -it bazel/example/src/main/java/com/etsy/example:Example-With-YourKit /bin/bash
+```
+
+# Get all relevant k8s objects
+
+```bash
+kubectl get storagebuckets,bigquerydatasets,deployments,services,secrets
 ```

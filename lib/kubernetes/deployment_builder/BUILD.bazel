@@ -1,0 +1,11 @@
+load("@kubernetes_deps//:requirements.bzl", "requirement")
+
+py_library(
+    name = "deployment_builder",
+    srcs = glob(["deployment.py"]),
+    visibility = ["//visibility:public"],
+    deps = [
+        requirement("PyYAML"),
+        requirement("docopt"),
+    ],
+)

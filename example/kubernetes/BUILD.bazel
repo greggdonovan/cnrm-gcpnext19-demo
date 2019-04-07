@@ -1,18 +1,90 @@
-load("@k8s_deploy//:defaults.bzl", "k8s_deploy")
-load("@k8s_service//:defaults.bzl", "k8s_service")
-load("@io_bazel_rules_k8s//k8s:objects.bzl", "k8s_objects")
+load("//tools/build_rules:k8s_template.bzl", "k8s_apps_for_contexts", "k8s_objects_for_contexts")
+load("//tools/build_rules:container_images.bzl", "tagged_image", "tagged_image_keys")
+load("//lib/kubernetes:contexts.bzl", "k8s_contexts")
 
-package(default_visibility = ["//visibility:public"])
+EXAMPLE_K8S_CONTEXTS = k8s_contexts["example"]
 
-k8s_deploy(
-    name = "example-deployment",
-    images = {
-        "example:latest": "//example/src/main/java/com/etsy/example:Example-With-YourKit",
-    },
-    template = "deployment.yaml",
+py_binary(
+    name = "namespace_builder",
+    srcs = glob(["namespace_builder.py"]),
+    visibility = ["//visibility:public"],
+    deps = [
+        "//lib/kubernetes/deployment_builder",
+    ],
 )
 
-k8s_service(
-    name = "example-service",
-    template = "service.yaml",
+k8s_objects_for_contexts(
+    name = "k8s_namespace",
+    binary = ":namespace_builder",
+    k8s_contexts = EXAMPLE_K8S_CONTEXTS,
+    visibility = ["//visibility:public"],
+)
+
+# KCC GCS CRD
+py_binary(
+    name = "gcsbucket_builder",
+    srcs = glob(["gcsbucket_builder.py"]),
+    visibility = ["//visibility:public"],
+    deps = [
+        "//lib/kubernetes/deployment_builder",
+    ],
+)
+
+k8s_objects_for_contexts(
+    name = "k8s_gcsbucket",
+    binary = ":gcsbucket_builder",
+    k8s_contexts = EXAMPLE_K8S_CONTEXTS,
+    visibility = ["//visibility:public"],
+)
+
+# KCC BigQuery Dataset CRD
+py_binary(
+    name = "bigquerydataset_builder",
+    srcs = glob(["bigquerydataset_builder.py"]),
+    visibility = ["//visibility:public"],
+    deps = [
+        "//lib/kubernetes/deployment_builder",
+    ],
+)
+
+k8s_objects_for_contexts(
+    name = "k8s_bigquerydataset",
+    binary = ":bigquerydataset_builder",
+    k8s_contexts = EXAMPLE_K8S_CONTEXTS,
+    visibility = ["//visibility:public"],
+)
+
+# Example app and service
+py_binary(
+    name = "deployment_builder",
+    srcs = glob(["deployment_builder.py"]),
+    visibility = ["//visibility:public"],
+    deps = [
+        "//lib/kubernetes/deployment_builder",
+    ],
+)
+
+deployment_images = {
+    "example": "//example/src/main/java/com/etsy/example:Example-With-YourKit",
+}
+
+k8s_objects_for_contexts(
+    name = "k8s_deployment",
+    binary = ":deployment_builder",
+    images = tagged_image_keys(deployment_images),
+    k8s_contexts = EXAMPLE_K8S_CONTEXTS,
+    visibility = ["//visibility:public"],
+)
+
+# Create all of the k8s objects in each context
+k8s_apps_for_contexts(
+    name = "k8s",
+    k8s_contexts = EXAMPLE_K8S_CONTEXTS,
+    objects = [
+        ":k8s_namespace",
+        ":k8s_gcsbucket",
+        ":k8s_bigquerydataset",
+        ":k8s_deployment",
+    ],
+    visibility = ["//visibility:public"],
 )
