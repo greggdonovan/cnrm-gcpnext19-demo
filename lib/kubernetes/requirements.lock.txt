@@ -19,7 +19,7 @@ oauthlib==2.0.7
 pyasn1==0.4.5
 pyasn1-modules==0.2.3
 python-dateutil==2.7.5
-PyYAML==3.12
+PyYAML==5.4
 requests==2.19.1
 requests-oauthlib==1.1.0
 rsa==4.0
